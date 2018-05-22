@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>简单增删改查表格</title>
+    <!-- css of 3rd party -->
+    <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/sweetalert/sweetalert.css"/>
+    <link rel="stylesheet" type="text/css" href="static/DataTables-1.10.15/css/jquery.dataTables.css"/>
+    <link rel="stylesheet" type="text/css" href="static/DataTables-1.10.15/plugins/bootstrap/dataTables.bootstrap.css"/>
+    <!-- js of 3rd party -->
+    <script src="static/jquery-1.12.4/jquery.min.js"></script>
+    <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="static/sweetalert/sweetalert.min.js"></script>
+    <script src="static/DataTables-1.10.15/js/jquery.dataTables.js"></script>
+    <script src="static/DataTables-1.10.15/plugins/bootstrap/dataTables.bootstrap.js"></script>
+</head>
+
+<body>
+<div style="text-align: center;padding-top: 20px;color: #24A6BC">
+    <p>用到了ajax请求，如果是在本机通过双击HTML文件打开，请使用火狐浏览器(谷歌跨域请求不支持file)</p>
+    <p>或者使用IDE，例如webstorm，它内置了http服务器，不用另外配置。</p>
+</div>
+<div class="container table-responsive">
+    <table class="stripe hover cell-border row-border" id="example">
+        <thead>
+        <tr>
+            <th><input id="checkall" type="checkbox"></th>
+            <th>姓名</th>
+            <th>地点</th>
+            <th>薪水</th>
+            <th>入职时间</th>
+            <th>办公地点</th>
+            <th>编号</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+</body>
+</html>
+
+<script>
+    $(function () {
+        // http://www.datatables.club/blog/2016/01/28/user-share-nbh1991.html
+        // http://www.datatables.club/reference/
+
+        /******************** table - init DT ********************/
+        var simpleCrudTable = $('#example').DataTable({
+            ajax: {
+                url: "test_data/people_info.json", // 请求后台路径
+                type: 'POST',
+                data: {
+                    uuid: ""
+                },
+                error: function (jqXHR, textStatus, errorMsg) {
+                    alert("请求失败");
+                }
+            },
+            "order": [[3, 'desc']],                 // 表格在初始化的时候的排序
+            "searching": true,                      // 是否开启本地搜索，默认是开启
+            "lengthChange": true,                  // 是否允许用户改变表格每页显示的记录数，默认是开启
+            "paging": true,                         // 是否开启本地分页，默认是开启
+            "pageLength": 5,                        // 初始化页面长度
+            "lengthMenu": [5, 10, 15],              // 每页条数可选项
+            "processing": true,                     // 是否显示正在处理的状态
+            "scrollY": 500,                         // 设置表格高度
+            "scrollCollapse": true,                // 是否开启表格高度自适应
+            "serverSide": false,                   // 开启服务器模式，默认是关闭
+            "scrollX": true,                       // 是否允许水平滚动
+            "scrollXInner": "100%",                // 设置内宽度
+            "jQueryUI": false,                     // jquery 风格
+            "autoWidth": false,                    // 禁止自动计算列宽
+            // 定义列
+            "columns": [
+                {"data": null, "width": "5%"},
+                {"data": "name", "width": "10%"},
+                {"data": "position", "width": "20%"},
+                {"data": "salary", "width": "10%"},
+                {"data": "start_date", "width": "10%"},
+                {"data": "office", "width": "15%"},
+                {"data": "extn", "width": "15%"},
+                {"data": null, "width": "15%"}
+            ],
+            // 设置定义列的初始属性
+            "columnDefs": [
+                {"targets": [0, 7], "searchable": false, "orderable": false},    // 第1和8列不进行搜索和排序
+                {"targets": ['_all'], "defaultContent": ''},                      // 所有列设置默认值为空字符串
+                {
+                    "targets": 0,
+                    "render": function (data, type, row, meta) {
+                        return '<input name="check_list" type="checkbox" value="' + row.id + '" />'
+                    }
+                },
+                {
+                    "targets": 7,
+                    "render": function (data, type, row, meta) {
+                        // var html = "<button class='btn btn-info btn-xs row-edit' type='button'" +
+                        //     "data-toggle='modal' data-target='#report-edit-model'>编辑</button>";
+                        var html = "<button class='btn btn-info btn-xs row-edit' type='button'>编辑</button>";
+                        html += "&nbsp;&nbsp;";
+                        html += "<button class='btn btn-danger btn-xs row-delete' type='button'>删除</button>";
+                        return html
+                    }
+                }
+            ],//列表状态
+            "language": {
+                "sProcessing": "处理中...",
+                "sLengthMenu": "显示 _MENU_ 项结果",
+                "sZeroRecords": "没有匹配结果",
+                "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "未搜索到数据",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                },
+                "oAria": {
+                    "sSortAscending": ": 以升序排列此列",
+                    "sSortDescending": ": 以降序排列此列"
+                }
+            },
+            "dom":
+            "<'row'<'col-xs-5'l><'col-xs-5'f>r<'#bulk-delete-btn.col-xs-2'>>" +
+            "t" +
+            "<'row'<'col-xs-6'i><'col-xs-6'p>>",
+            // 表格加载完回调(ajax之前)
+            "initComplete": function () {
+                $("#bulk-delete-btn").append('<button class="btn btn-default btn-sm bulk-delete" type="button">批量删除</button>');
+                // 加载完成之后 初始化checkbox
+                cleanCheckbox('example');
+                $("#checkall").click(function () {
+                    if ($(this).prop("checked")) {
+                        $("input[name='check_list']").prop("checked", true);
+                        $("tr").addClass('selected');
+                    } else {
+                        $("input[name='check_list']").prop("checked", false);
+                        $("tr").removeClass('selected');
+                    }
+                });
+                $(".row-edit").click(function () {
+                    var currentRow = $(this).parent().parent();
+                    var rowData = simpleCrudTable.row(currentRow).data();
+                    console.log(rowData);
+                    swal({
+                            title: "修改文件名",
+                            text: "请输入新文件名",
+                            type: "input",
+                            confirmButtonText: "确认",
+                            showCancelButton: true,
+                            closeOnConfirm: false,
+                            cancelButtonText: "取消",
+                            showLoaderOnConfirm: true
+                        },
+                        function (inputValue) {
+                            if (!inputValue) {
+                                swal.showInputError("请输入文件名！");
+                                return false
+                            }
+                            else {
+                                setTimeout(function () {
+                                    swal("文件名成功修改为：" + inputValue);
+                                }, 1000);
+                            }
+                        });
+                });
+                $(".row-delete").click(function () {
+                    var currentRow = $(this).parent().parent();
+                    var rowData = simpleCrudTable.row(currentRow).data();
+                    console.log(rowData);
+                });
+                $(".bulk-delete").click(function () {
+                    var selectedRows = simpleCrudTable.rows(".selected").data();
+                    if (selectedRows.length === 0) {
+                        alert("请选择一条数据");
+                    } else {
+                        for (var i = 0; i < selectedRows.length; i++) {
+                            console.log(selectedRows[i]);
+                        }
+                    }
+                });
+            }
+        });
+
+        /******************** table - common functions ********************/
+        // 选中一行 checkbox选中
+        function cleanCheckbox(tableId) {
+            //每次加载时都先清理
+            $('#' + tableId + ' tbody').off("click", "tr");
+            $('#' + tableId + ' tbody').on("click", "tr", function () {
+                $(this).toggleClass('selected');
+                if ($(this).hasClass("selected")) {
+                    $(this).find("input").prop("checked", true);
+                } else {
+                    $(this).find("input").prop("checked", false);
+                }
+            });
+        }
+
+        // 重新加载表格
+        function tableReload(tableId) {
+            $('#' + tableId).ajax.reload()
+        }
+    });
+</script>
+
+<style type="text/css">
+    /* table-responsive */
+    @media (max-width: 767px) {
+        .table-responsive {
+            padding: 10px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .table-responsive {
+            padding: 30px;
+        }
+    }
+
+    /* table */
+    table.dataTable tr th, table.dataTable tr td {
+        text-align: center;
+    }
+
+    /* custom buttons */
+    #bulk-delete-btn {
+        text-align: right;
+    }
+
+    /* selected row background-color*/
+    table.dataTable tbody tr.selected {
+        background-color: beige !important;
+    }
+
+    /* fix 3rd party bug: conflict between DT_jquery_css and DT_bootstarap_css in sorting icon */
+    /* remove the "\e150" in content */
+    table.dataTable thead .sorting:after {
+        opacity: 0.2;
+        content: "" !important;
+    }
+
+    table.dataTable thead .sorting_desc:after {
+        opacity: 0.2;
+        content: "" !important;
+    }
+
+    table.dataTable thead .sorting_asc:after {
+        opacity: 0.2;
+        content: "" !important;
+    }
+
+    /* fix 3rd party bug: conflict between DT_jquery_css and DT_bootstarap_css in paginate */
+    .dataTables_wrapper .dataTables_paginate {
+        float: right !important;
+        text-align: right !important;
+        padding-top: 1.5em !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        display: contents !important;
+    }
+</style>
