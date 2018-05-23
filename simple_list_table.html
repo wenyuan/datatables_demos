@@ -44,8 +44,8 @@
         /******************** table - init DT ********************/
         var simpleListTable = $('#example').DataTable({
             ajax: {
-                url: "test_data/people_info.json", // 请求后台路径
                 type: 'POST',
+                url: "test_data/people_info.json", // 请求后台路径
                 data: {
                     uuid: ""
                 },
@@ -73,14 +73,20 @@
                 {"data": "name", "width": "10%"},
                 {"data": "position", "width": "20%"},
                 {"data": "salary", "width": "10%"},
-                {"data": "start_date", "width": "10%"},
+                {
+                    "data": "start_date",
+                    "width": "10%",
+                    render: function (data, type, row, meta) {
+                        return (new Date(data)).Format("yyyy-MM-dd hh:mm:ss")
+                    }
+                },
                 {"data": "office", "width": "15%"},
                 {"data": "extn", "width": "15%"}
             ],
             // 设置定义列的初始属性
             "columnDefs": [
                 {"targets": [0], "searchable": false, "orderable": false},
-                {"targets": ['_all'], "defaultContent": ''},                      // 所有列设置默认值为空字符串
+                {"targets": ['_all'], "defaultContent": ''}                      // 所有列设置默认值为空字符串
             ],//列表状态
             "language": {
                 "sProcessing": "处理中...",
@@ -144,6 +150,30 @@
         function tableReload(tableId) {
             $('#' + tableId).ajax.reload()
         }
+
+        /******************** other functions ********************/
+        // 时间格式化
+        Date.prototype.Format = function (fmt) { //author: meizz
+            fmt = fmt || "yyyy-MM-dd hh:mm:ss";
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        };
     });
 </script>
 <style type="text/css">
@@ -195,16 +225,16 @@
 
     /* override css: remove table border */
     /*table.dataTable thead td {*/
-        /*padding: 10px 18px;*/
-        /*border-bottom: 1px none transparent !important;*/
+    /*padding: 10px 18px;*/
+    /*border-bottom: 1px none transparent !important;*/
     /*}*/
 
     /*table.dataTable.no-footer {*/
-        /*border-bottom: 1px none transparent !important;*/
+    /*border-bottom: 1px none transparent !important;*/
     /*}*/
 
     /*.dataTables_wrapper.no-footer .dataTables_scrollBody {*/
-        /*border-bottom: 1px none transparent !important;*/
+    /*border-bottom: 1px none transparent !important;*/
     /*}*/
 
 </style>

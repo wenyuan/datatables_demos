@@ -48,8 +48,8 @@
         /******************** table - init DT ********************/
         var simpleCrudTable = $('#example').DataTable({
             ajax: {
-                url: "test_data/people_info.json", // 请求后台路径
                 type: 'POST',
+                url: "test_data/people_info.json", // 请求后台路径
                 data: {
                     uuid: ""
                 },
@@ -77,7 +77,13 @@
                 {"data": "name", "width": "10%"},
                 {"data": "position", "width": "20%"},
                 {"data": "salary", "width": "10%"},
-                {"data": "start_date", "width": "10%"},
+                {
+                    "data": "start_date",
+                    "width": "10%",
+                    render: function (data, type, row, meta) {
+                        return (new Date(data)).Format("yyyy-MM-dd")
+                    }
+                },
                 {"data": "office", "width": "15%"},
                 {"data": "extn", "width": "15%"},
                 {"data": null, "width": "15%"}
@@ -146,7 +152,9 @@
                         $("tr").removeClass('selected');
                     }
                 });
-                $(".row-edit").click(function () {
+                // 行事件
+                var $tableBody = $("#example").find('tbody:first');
+                $tableBody.on('click', '.row-edit', function (e) {
                     var currentRow = $(this).parent().parent();
                     var rowData = simpleCrudTable.row(currentRow).data();
                     console.log(rowData);
@@ -163,19 +171,22 @@
                         function (inputValue) {
                             if (!inputValue) {
                                 swal.showInputError("请输入文件名！");
+                                simpleCrudTable.ajax.reload();
                                 return false
                             }
                             else {
                                 setTimeout(function () {
                                     swal("文件名成功修改为：" + inputValue);
                                 }, 1000);
+                                simpleCrudTable.ajax.reload();
                             }
                         });
                 });
-                $(".row-delete").click(function () {
+                $tableBody.on('click', '.row-delete', function (e) {
                     var currentRow = $(this).parent().parent();
                     var rowData = simpleCrudTable.row(currentRow).data();
                     console.log(rowData);
+                    simpleCrudTable.ajax.reload();
                 });
                 $(".bulk-delete").click(function () {
                     var selectedRows = simpleCrudTable.rows(".selected").data();
@@ -209,6 +220,30 @@
         function tableReload(tableId) {
             $('#' + tableId).ajax.reload()
         }
+
+        /******************** other functions ********************/
+        // 时间格式化
+        Date.prototype.Format = function (fmt) { //author: meizz
+            fmt = fmt || "yyyy-MM-dd hh:mm:ss";
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        };
     });
 </script>
 
