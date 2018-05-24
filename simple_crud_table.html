@@ -25,7 +25,7 @@
     <table class="stripe hover cell-border row-border" id="example">
         <thead>
         <tr>
-            <th><input id="checkall" type="checkbox"></th>
+            <th><input id="table-checkall" type="checkbox"></th>
             <th>姓名</th>
             <th>地点</th>
             <th>薪水</th>
@@ -143,7 +143,7 @@
                 $("#bulk-delete-btn").append('<button class="btn btn-default btn-sm bulk-delete" type="button">批量删除</button>');
                 // 加载完成之后 初始化checkbox
                 cleanCheckbox('example');
-                $("#checkall").click(function () {
+                $("#table-checkall").click(function () {
                     if ($(this).prop("checked")) {
                         $("input[name='check_list']").prop("checked", true);
                         $("tr").addClass('selected');
@@ -205,6 +205,7 @@
         // 选中一行 checkbox选中
         function cleanCheckbox(tableId) {
             //每次加载时都先清理
+            $('#table-checkall').attr("checked",false);
             $('#' + tableId + ' tbody').off("click", "tr");
             $('#' + tableId + ' tbody').on("click", "tr", function () {
                 $(this).toggleClass('selected');
