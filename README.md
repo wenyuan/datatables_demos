@@ -8,10 +8,10 @@
 * 用火狐浏览器或者IDE内置的http服务器打开。
 
 ## 说明
-* simple_list_table.html
+* simple_list_table.html </br>
 简单的数据展现表格，前端分页和过滤。
 ![image](https://github.com/xwenyuan/datatables_examples/blob/master/screenshots/simple_list_table.gif)
-* simple_crud_table.html
+* simple_crud_table.html </br>
 简单的表格数据CRUD，前端分页和过滤，行操作和批量操作的具体实现直接修改相应时间里的axaj即可。
 ![image](https://github.com/xwenyuan/datatables_examples/blob/master/screenshots/simple_crud_table.gif)
 
