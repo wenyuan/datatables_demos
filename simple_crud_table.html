@@ -160,8 +160,8 @@
                     var rowData = simpleCrudTable.row(currentRow).data();
                     console.log(rowData);
                     swal({
-                            title: "修改文件名",
-                            text: "请输入新文件名",
+                            title: "编辑名称",
+                            text: "请输入新名称",
                             type: "input",
                             confirmButtonText: "确认",
                             showCancelButton: true,
@@ -171,13 +171,13 @@
                         },
                         function (inputValue) {
                             if (!inputValue) {
-                                swal.showInputError("请输入文件名！");
+                                swal.showInputError("请输入新名称！");
                                 simpleCrudTable.ajax.reload();
                                 return false
                             }
                             else {
                                 setTimeout(function () {
-                                    swal("文件名成功修改为：" + inputValue);
+                                    swal("名称成功修改为：" + inputValue);
                                 }, 1000);
                                 simpleCrudTable.ajax.reload();
                             }
