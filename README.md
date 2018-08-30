@@ -14,8 +14,3 @@
 * simple_crud_table.html </br>
 简单的表格数据CRUD，前端分页和过滤，行操作和批量操作的具体实现直接修改相应时间里的axaj即可。
 ![image](https://github.com/xwenyuan/datatables_examples/blob/master/screenshots/simple_crud_table.gif)
-
-## todo
-* 表格列的选择(隐藏/显示)demo
-* 多条件筛选
-* 后端分页
